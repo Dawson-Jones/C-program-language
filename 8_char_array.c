@@ -2,7 +2,7 @@
 
 #define MAXLINE 1000
 
-int getline(char line[], int limit);  // 读取一行的长度
+int get_line(char line[], int limit);  // 读取一行的长度
 void copy(char to[], char from[]);
 
 int main()
@@ -12,7 +12,7 @@ int main()
     char line[MAXLINE];  // 当前输入行
     char longest[MAXLINE];  // 保存最长行
 
-    while ((len = getline(line, MAXLINE)) > 0){
+    while ((len = get_line(line, MAXLINE)) > 0){
         if (len > max){
             max = len;
             copy(longest, line);
@@ -23,11 +23,11 @@ int main()
     return 0;
 }
 
-int getline(char line[], int limit)
+int get_line(char line[], int limit)
 {
     int c, i;
 
-    for (i=0; i<limit-1 && (c = getchar()) != EOF && c != '\n'; ++i)
+    for (i=0; i<limit-1 && (c = getchar()) != '0' && c != '\n'; ++i)
         line[i] = c;
     
     if (c == '\n'){
