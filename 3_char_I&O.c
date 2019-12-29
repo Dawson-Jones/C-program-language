@@ -17,10 +17,10 @@ void main()
 void main()
 {
     int c;
-    while ((c = getline()) != EOF)
+    while ((c = getchar()) != EOF)
     {
         putchar(c);
-        printf("\nc: %c\n", c);  // char
-        printf("d: %d\n", c);  // ascii
+        printf("\nchar: %c\n", c);  // char
+        printf("ascii: %d\n", c);  // ascii
     }
 }
