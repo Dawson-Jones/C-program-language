@@ -10,5 +10,4 @@ void main()
             ++nl;
     }
     printf("sum: %d\n", nl);
-    
 }

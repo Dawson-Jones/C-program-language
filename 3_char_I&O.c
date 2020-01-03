@@ -20,7 +20,7 @@ void main()
     while ((c = getchar()) != EOF)
     {
         putchar(c);
-        printf("\nchar: %c\n", c);  // char
+        printf("\nchar: %c\n", c); // char
         printf("ascii: %d\n", c);  // ascii
     }
 }
