@@ -6,7 +6,7 @@ int main()
 {
     int len;
     len = str_len("hello, world");
-    printf("长度为: %d\n", len);
+    printf("length: %d\n", len);
     return 0;
 }
 

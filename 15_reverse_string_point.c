@@ -3,9 +3,7 @@
 void reverse(char *s)
 {
     if (*s != '\0')
-    {
-        reverse(s++);
-    }
+        reverse(++s);
     putchar(*s);
 }
 

@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-//#define 后面无分号
+// #define 后面无分号
 #define LOWER 0
 #define UPPER 300
 #define STEP 20
