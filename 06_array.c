@@ -2,7 +2,7 @@
 
 /* 统计各个数字, 空白符及其他字符出现的次数*/
 
-void main()
+int main()
 {
     int c, i, nwhite, nother;
     int ndigit[10];
@@ -25,4 +25,5 @@ void main()
     for (i = 0; i < 10; ++i)
         printf(" %d", ndigit[i]);
     printf(", white space = %d, other = %d\n", nwhite, nother);
+    return 0;
 }

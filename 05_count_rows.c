@@ -9,5 +9,5 @@ void main()
         if (c == '\n')
             ++nl;
     }
-    printf("sum: %d\n", nl);
+    printf("%d lines\n", nl);
 }
