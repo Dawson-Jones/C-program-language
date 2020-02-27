@@ -1,25 +1,6 @@
 #include <stdio.h>
 
-/*
-int power(int m, int n){
-    if (n > 1)
-        return m * power(m, n-1);
-    return m;
-}
-
-void main()
-{
-    int a = 2;
-    int b = 5;
-    int num = power(a, b);
-    printf("%d的%d次幂是: %d\n", a, b, num);
-}
-*/
-
-// ---------------------------------
-
-// /*
-int power(int base, int n);
+int power(int base, int n);  // 函数原型
 
 int main()
 {
@@ -37,4 +18,3 @@ int power(int base, int n)
         p = p * base;
     return p;
 }
-// */
