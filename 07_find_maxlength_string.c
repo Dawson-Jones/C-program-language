@@ -21,7 +21,7 @@ int main(int argc, char const *argv[])
 	return 0;
 }
 
-int get_line(char s[], int lim){
+int get_line(char s[], int lim){  // 把输入的字符(一行)放在 s 数组中, 并返回这一行的长度
 	int c, i;
 	for (i = 0; i < lim-1&&(c = getchar())!=EOF&&c!='\n'; ++i)
 		s[i] = c;
