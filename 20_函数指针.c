@@ -29,7 +29,7 @@ int main(){
     printf("Enter two operands for some arithmetic: \n");
     if (scanf("%lf %lf", &x, &y) != 2){
         printf("Invalid input.\n");
-	return 0;
+        return 0;
     }
     for (i=0;i<5;i++)
         printf("%10s: %6.2f\n", msgTable[i], (*funcTable[i])(x,y));
