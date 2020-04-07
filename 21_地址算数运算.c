@@ -7,8 +7,8 @@ static char *allocp = allocbuf;  // 下一个空闲位置
 char *alloc(int n){
    if(allocbuf+ALLOCSIZE-allocp >= n){  // 头部指针+size-当前指针  有足够的空间
         allocp += n;
-        return allock-n;  // 分配钱的指针p
-   }else
+        return allocp-n;  // 分配前的指针p
+   } else
       return 0;
 }
 
