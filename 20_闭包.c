@@ -24,9 +24,8 @@ main(int argc, char const *argv[]){
     func = wrap(4, 3);
     printf("5 mul 6: %.2f\n", func(5, 6));
 
-    // ff 
     double (*ff)(double, double) = wrap2(2, 3);
-    printf("6 sub 5: %.2f", ff(6, 5));
+    printf("6 sub 5: %.2f\n", ff(6, 5));
 
     return 0;
 }
