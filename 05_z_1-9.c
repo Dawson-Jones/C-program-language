@@ -4,17 +4,15 @@ cp input to output
 */
 #include <stdio.h>
 #define NONBLANK 'a'
+
 int main(){
     int c, last_char;
     last_char = NONBLANK;
-    while ((c = getchar())!= EOF)
-    {
-        if (last_char !=' '||c!=' ')
-        {
+    while ((c = getchar())!= EOF){
+        if (last_char != ' ' || c != ' ')
             putchar(c);
-        }
         last_char =c;
     }
-    
+
     return 0;
 }

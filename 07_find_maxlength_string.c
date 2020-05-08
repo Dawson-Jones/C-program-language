@@ -4,29 +4,30 @@
 int get_line(char line[], int maxline);
 void copy(char to[], char from[]);
 
-int main(int argc, char const *argv[])
-{
+int main(int argc, char const *argv[]){
 	int len, max;
 	char line[MAXLINE], longest[MAXLINE];
 
 	max = 0;
 	while((len = get_line(line, MAXLINE))>0)
-		if (len>max)
-		{
+		if (len>max){
 			max = len;
 			copy(longest, line);
 		}
+
 	if(max>0)
 		printf("%s\n", longest);
+
 	return 0;
 }
 
-int get_line(char s[], int lim){  // 把输入的字符(一行)放在 s 数组中, 并返回这一行的长度
+// 把输入的字符(一行)放在 s 数组中, 并返回这一行的长度
+int get_line(char s[], int lim){
 	int c, i;
 	for (i = 0; i < lim-1&&(c = getchar())!=EOF&&c!='\n'; ++i)
 		s[i] = c;
-	if (c == '\n')
-	{
+
+	if (c == '\n'){
 		s[i] = '\0';
 		++i;
 	}
@@ -35,7 +36,7 @@ int get_line(char s[], int lim){  // 把输入的字符(一行)放在 s 数组�
 
 void copy(char to[], char from[]){
 	int i = 0;
-	while((to[i]=from[i])!='\0'){
+
+	while((to[i]=from[i])!='\0')
 		++i;
-	}
 }
