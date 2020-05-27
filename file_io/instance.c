@@ -24,7 +24,7 @@ tell(file_obj_t *self) {
 
 int
 close(file_obj_t *self) {
-    int res = fclose(self->fd);
+    int res = fclose(self->fd);             // 成功关闭返回 0
     free(self);
     return res;
 }
