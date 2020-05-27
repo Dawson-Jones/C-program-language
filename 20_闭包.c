@@ -6,13 +6,17 @@ double Sub(double x, double y){return x - y;}
 
 typedef double (*func_t)(double, double);
 
+/* 
+第一种方式, wrap 返回一个 func_t 的类型
+*/
 func_t 
 wrap(int x, int y){
     if (x + y < 5) return Add;
     else return Mul;
 }
 
-double (*wrap2(int x, int y))(double, double)
+// 第二种, 返回一个函数指针, 该函数指针的返回值是 double 类型, 接收两个 double 类型的参数
+double (*wrap2(int x, int y)) (double, double)
 {
     return Sub;
 }

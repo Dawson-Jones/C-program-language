@@ -17,13 +17,14 @@ double (*funcTable[])(double, double) = {Add, Sub, Mul, Div, pow};  // pow 来�
 
 char *msgTable[5] = {"Sum", "Difference", "Product", "Quotient", "Power"};
 
+// 接收 3 个参数
+// 第一个是 -> "返回值是 double 接收两个 double 类型的参数的函数指针"
+// 第二和第三个参数, 是两个 double 类型的数
 double compute(double (*func)(double, double), double x, double y){
     return func(x, y);
 }
 
 int main(){
-    int i;
-
     // 索引变量
     double x = 0, y = 0;
     printf("Enter two operands for some arithmetic: \n");
@@ -31,7 +32,7 @@ int main(){
         printf("Invalid input.\n");
         return 0;
     }
-    for (i=0;i<5;i++)
+    for (int i=0;i<5;i++)
         printf("%10s: %6.2f\n", msgTable[i], (*funcTable[i])(x,y));
 
     double (*funcPtr)(double, double);

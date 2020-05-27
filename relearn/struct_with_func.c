@@ -4,7 +4,8 @@ int add(int x, int y) { return x + y;}
 typedef int (*my_sum)(int, int);
 
 typedef struct {
-    my_sum  func;
+    // my_sum  func;
+    int (*func)(int x, int y);
     int     first_param;
     int     second_param;
 } test_t;
