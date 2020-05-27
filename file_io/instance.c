@@ -8,30 +8,42 @@ struct file_obj_s {
    FILE *fd;
    file_obj_t *(*seek)(file_obj_t *self, long offset, int where);
    long (*tell)(file_obj_t *self);
+   int (*close)(file_obj_t *self);
 };
 
-file_obj_t *seek(file_obj_t *self, long offset, int where){
+file_obj_t *
+seek(file_obj_t *self, long offset, int where) {
     fseek(self->fd, offset, where);
     return self;
 }
 
-long tell(file_obj_t *self){
+long
+tell(file_obj_t *self) {
     return ftell(self->fd);
 }
 
-file_obj_t *open(char *fn, const char *mode){
+int
+close(file_obj_t *self) {
+    int res = fclose(self->fd);
+    free(self);
+    return res;
+}
+
+file_obj_t *
+open(char *fn, const char *mode) {
     file_obj_t *obj = (file_obj_t *) malloc(sizeof(file_obj_t));
     if (!obj) exit(1);
     obj->fd = fopen(fn, mode);
     obj->seek = seek;
     obj->tell = tell;
+    obj->close = close;
     return obj;
 }
 
 
 // 一次性读取文件所有内容
 char *
-get_file_all(char *fn)
+get_file_all(char *fn) 
 {
     FILE *fd_r;                         // 读取的文件描述符
     char *str;
@@ -62,6 +74,6 @@ main()
     file_obj_t *fd = open("test.txt", "r");
     long res = fd->seek(fd, 3, SEEK_SET)->tell(fd);
     printf("res: %ld\n", res);
-    free(fd);
+    fd->close(fd);
     return 0;
 }
