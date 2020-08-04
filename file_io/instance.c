@@ -6,6 +6,7 @@
 typedef struct file_obj_s file_obj_t;
 struct file_obj_s {
    FILE *fd;
+
    file_obj_t *(*seek)(file_obj_t *self, long offset, int where);
    long (*tell)(file_obj_t *self);
    int (*close)(file_obj_t *self);

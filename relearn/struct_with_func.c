@@ -4,10 +4,11 @@ int add(int x, int y) { return x + y;}
 typedef int (*my_sum)(int, int);
 
 typedef struct {
-    // my_sum  func;
-    int (*func)(int x, int y);
     int     first_param;
     int     second_param;
+
+    // my_sum  func;
+    int (*func)(int x, int y);
 } test_t;
 
 
@@ -18,7 +19,7 @@ int main(int argc, char const *argv[])
         printf("invilid input\n");
         return 0;
     }
-    test_t test = {add, x, y};
+    test_t test = { x, y, add };
     int res = test.func(test.first_param, test.second_param);
     printf("res: %d\n", res);
     return 0;

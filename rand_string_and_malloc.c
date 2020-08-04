@@ -3,17 +3,19 @@
 
 int main ()
 {
-    int i,n;
+    int n;
     char * buffer;
     printf ("输入字符串的长度：");
-    scanf ("%d", &i);
-    buffer = (char*)malloc(i+1);  // 字符串最后包含 \0
+    scanf ("%d", &n);
+    buffer = (char *) malloc(n+1);  // 字符串最后包含 \0
     if(buffer==NULL) exit(1);  // 判断是否分配成功
+
     // 随机生成字符串
-    for(n=0; n<i; n++)
-        buffer[n] = rand()%26+'a';
-    buffer[i]='\0';
-    printf ("随机生成的字符串为：%s\n",buffer);
+    for(int i=0; i<n; i++)
+        buffer[i] = rand()%26+'a';
+
+    buffer[n]='\0';
+    printf("随机生成的字符串为：%s\n",buffer);
     free(buffer);  // 释放内存空间
     return 0;
 }
