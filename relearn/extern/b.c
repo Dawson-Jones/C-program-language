@@ -3,5 +3,5 @@
 int num = 5;
 
 void func() {
-    printf("file b -> func\n");
+    printf("file b -> func, num: %d\n", num);
 }
