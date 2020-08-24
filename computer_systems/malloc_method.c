@@ -14,7 +14,7 @@ union header {
 };
 
 static Header base;             // start with null link
-static Header *freep = NULL;    // 上次找到空闲块的 block 头
+static Header *freep = NULL;    // 上次找到空闲块的前面一个块
 
 void *my_malloc(unsigned nbytes)
 {
@@ -82,6 +82,24 @@ void my_free(void *ap)
    /*
     * bp <= p || bp >= p->s.next_block_header
     */
-   for (p = freep; !(bp > p && bp < p->s.next_block_header); p = p->s.next_block_header)
+   for (p = freep; !(bp > p && bp < p->s.next_block_header); p = p->s.next_block_header) {
+       if (p >= p->s.next_block_header && (bp > p || bp < p->s.next_block_header))
+           break;   // 被释放的块在链表的开头或末尾
+   }
 
+   /* 与上个相邻块合并 */
+   if (bp + bp->s.size == p->s.next_block_header) {
+       bp->s.size += p->s.next_block_header->s.size;
+       bp->s.next_block_header = p->s.next_block_header->s.next_block_header;
+   } else {
+       bp->s.next_block_header = p->s.next_block_header;
+   }
+   /* 与下个相邻块合并 */
+    if (p + p->s.size == bp) {
+        p->s.size += bp->s.size;
+        p->s.next_block_header = bp->s.next_block_header;       // 合并到了p的后面
+    } else {
+        p->s.next_block_header = bp;
+    }
+    freep = p;
 }

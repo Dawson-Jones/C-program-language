@@ -29,6 +29,7 @@ int my_fputs(char *s, FILE *iop)
 int main() {
     char str[100];
     my_fgets(str, 100, stdin);
-    printf("%s", str);
+    my_fputs(str, stdout);
+    // printf("%s", str);
     return 0;
 }

@@ -2,7 +2,6 @@
  *  copy input to output
  */
 
-
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/uio.h>
@@ -11,11 +10,13 @@
 #include <stdio.h>
 
 /* 无缓冲的单字符输入 */
+/* int read(int in_fd, char *to, int char_num); */
 int my_getchar(void) {
     char c;
     return (read(0, &c, 1) == 1) ? (unsigned char) c : EOF;
 }
 
+/* int write(int out_fd, char *from, int char_num) */
 void my_putchar(unsigned char c) {
     write(1, &c, 1);
 }
