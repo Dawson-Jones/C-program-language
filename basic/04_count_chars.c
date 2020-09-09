@@ -7,9 +7,9 @@ int main()
     int sp = 0;
     int enter = 0;
     int table = 0;
+
     for (nc = 0; (c=getchar()) != EOF; nc++){
-        switch (c)
-        {
+        switch (c) {
         case ' ':
             sp++;
             break;

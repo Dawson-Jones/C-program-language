@@ -15,6 +15,7 @@ void minprintf(char *fmt, ...)
             putchar(*p);
             continue;
         }
+
         switch (*++p) {
         case 'd':
             ival = va_arg(ap, int);
