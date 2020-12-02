@@ -32,12 +32,16 @@ int main() {
     socklen_t client_addr_size = sizeof(client_addr);
     int client_socket = accept(serv_sock, (struct sockaddr *) &client_addr, &client_addr_size);
     printf("addr: %s\n", inet_ntoa(client_addr.sin_addr));
+    // 非常奇怪， 到这里阻塞，下面的直到消息发送过来不会执行
 
     char buffer[1024] = {0};
-    read(client_socket, buffer, 1024);
-    printf("%s", buffer);
-    write(client_socket, buffer, strlen(buffer));
-    close(client_socket);
+    while (1) {
+        printf("--------\n");
+        read(client_socket, buffer, 1024);
+        printf("%s\n", buffer);
+        write(client_socket, buffer, strlen(buffer));
+    }
+        close(client_socket);
 
     close(serv_sock);
     return 0;

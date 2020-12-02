@@ -22,7 +22,7 @@ void *my_malloc(unsigned nbytes)
     Header *my_morecore(unsigned);
     unsigned nunits;
 
-    // 向上取整 再加1, nunits的意思是: 需要 n + 1 个 Header大小的 byte
+    // 向上取整 再加1, nunits的意思是: 需要 n + 1 个 Header 大小的 byte
     nunits = (nbytes + sizeof(Header) - 1) / sizeof(Header) + 1;    // n 个小单元
 
     // 初始化?
@@ -36,9 +36,9 @@ void *my_malloc(unsigned nbytes)
             if (p->s.size == nunits)    // 刚好满足要求
                 prevp->s.next_block_header = p->s.next_block_header;
             else {                      // 分配该块末尾的部分
-                p->s.size -= nunits;    // size减去了比分配出去多一个单元到size
+                p->s.size -= nunits;    // size 减去了比分配出去多一个单元到 size
                 p += p->s.size;         // 把 p 移向准备返回的内存指针的前一单元
-                p->s.size = nunits;     // 建了一个新的头，记录着此时header到后面分配出去到total size
+                p->s.size = nunits;     // 建了一个新的头，记录着此时 header 到后面分配出去到 total_size
             }
             freep = prevp;
             return (void *)(p+1);       // 去掉 Header 部分, 把后面的部分返回
