@@ -1,8 +1,8 @@
 #include <stdio.h>
 
-double Add (double x, double y){return x + y;}
-double Mul(double x, double y){return x * y;}
-double Sub(double x, double y){return x - y;}
+double Add(double x, double y) { return x + y; }
+double Mul(double x, double y) { return x * y; }
+double Sub(double x, double y) { return x - y; }
 
 typedef double (*func_t)(double, double);
 

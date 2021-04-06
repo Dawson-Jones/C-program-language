@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #include <math.h>
 
-double Add (double x, double y){return x + y;}
-double Sub(double x, double y){return x - y;}
-double Mul(double x, double y){return x * y;}
-double Div(double x, double y){return x / y;}
+double Add(double x, double y) { return x + y; }
+double Sub(double x, double y) { return x - y; }
+double Mul(double x, double y) { return x * y; }
+double Div(double x, double y) { return x / y; }
 
 // 具有5个函数指针的数组, 函数需要两个double类型的参数, 返回值为double类型
 double (*funcTable[])(double, double) = {Add, Sub, Mul, Div, pow};  // pow 来自math库

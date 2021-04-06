@@ -15,9 +15,8 @@ int main(int argc, char *argv[]) {
     sin_addr.sin_family = AF_INET;
     sin_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
     sin_addr.sin_port = htons(9734);
-    size_t serv_addr_size = sizeof(sin_addr);
-    int result = connect(sockfd, (struct sockaddr *) &sin_addr, serv_addr_size);
 
+    int result = connect(sockfd, (struct sockaddr *) &sin_addr, sizeof(sin_addr));
     if (result == -1) {
         perror("oops: client1");
         exit(1);

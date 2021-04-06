@@ -6,6 +6,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
+#define BUF_LEN 1024
 #define PORT 8080
 
 
@@ -18,7 +19,6 @@ int main() {
     int serv_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
     struct sockaddr_in serv_addr;
-
     memset(&serv_addr, 0, sizeof(serv_addr));  // 初始化 sock_addr
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
@@ -30,19 +30,26 @@ int main() {
 
     struct sockaddr_in client_addr;
     socklen_t client_addr_size = sizeof(client_addr);
-    int client_socket = accept(serv_sock, (struct sockaddr *) &client_addr, &client_addr_size);
-    printf("addr: %s\n", inet_ntoa(client_addr.sin_addr));
-    // 非常奇怪， 到这里阻塞，下面的直到消息发送过来不会执行
 
-    char buffer[1024] = {0};
+    char buffer[BUF_LEN] = {0};
     while (1) {
-        printf("--------\n");
-        read(client_socket, buffer, 1024);
-        printf("%s\n", buffer);
-        write(client_socket, buffer, strlen(buffer));
-    }
-        close(client_socket);
+        int client_socket = accept(serv_sock, (struct sockaddr *) &client_addr, &client_addr_size);
+        printf("addr: %s, fd: %d\n", inet_ntoa(client_addr.sin_addr), client_socket);
+        // 非常奇怪， 到这里阻塞，下面的直到消息发送过来不会执行
 
+        int bytes_len;
+        while ((bytes_len = read(client_socket, buffer, BUF_LEN))) {
+        // while ((bytes_len = recv(client_socket, buffer, BUF_LEN, 0))) {
+            printf("%s\n", buffer);
+            write(client_socket, buffer, strlen(buffer));
+            // send(client_socket, buffer, strlen(buffer), 0);
+            if (!bytes_len){
+                break;
+            }
+        }
+        printf("client close connect.\n");
+        close(client_socket);
+    }
     close(serv_sock);
     return 0;
 }

@@ -60,7 +60,7 @@ static Header *my_morecore(unsigned nu)
     char *sbrk(int);
     Header *up;
 
-    if (nu <NALLOC)
+    if (nu < NALLOC)
         nu = NALLOC;
     cp = sbrk(nu * sizeof(Header));
     if (cp == (char *) -1)  // 没有向系统申请到空间
