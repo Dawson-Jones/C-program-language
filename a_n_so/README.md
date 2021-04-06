@@ -52,6 +52,8 @@ libc.so.6 => /lib64/libc.so.6 (0x00007f327a4a6000)
 
 3. 编译  
 `gcc use_staticmath.c -L . -l dynmath`
+-L 添加一个目录到库的搜索路径
+-l 指定编译的时候要使用的库
 
 > 注意: 编译完成后, 并不能运行, ldd 查看
 
@@ -70,6 +72,9 @@ libc.so.6 => /lib64/libc.so.6 (0x00007f5de8c8d000)
     `cp libdynmath.so /usr/lib64`
     - 方法 2  
     编辑/etc/ld.so.conf文件，加入库文件所在目录的路径  
+    - 方法 3
+    `export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:<your dynamic lib path>`
+    只是在当前的 shell 中生效, 因为是运行中动态库的查找路径
 
 比较静态库和动态库生成的 *.o* 文件  
 ```
