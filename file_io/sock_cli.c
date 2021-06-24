@@ -8,24 +8,44 @@
 #include <string.h>
 
 int main(int argc, char *argv[]) {
-    struct sockaddr_in sin_addr;
-    char str[1024] = "hello, world";
+    int sockfd, b, c;
+    struct sockaddr_in src, dst;
+    char str[1024];
 
-    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    sin_addr.sin_family = AF_INET;
-    sin_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-    sin_addr.sin_port = htons(9734);
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
-    int result = connect(sockfd, (struct sockaddr *) &sin_addr, sizeof(sin_addr));
-    if (result == -1) {
+    // /** ---- not nessary ------------
+    src.sin_family = AF_INET;
+    src.sin_port = htons(1314);
+    inet_pton(AF_INET, "127.0.0.1", &src.sin_addr);
+    // src.sin_addr.s_addr = inet_addr("127.0.0.1");    // same effect as above
+    b = bind(sockfd, (struct sockaddr *) &src, sizeof(src));
+    if (b == -1)
+        perror("oops bind");
+    // --------------------------------- */
+
+    dst.sin_family = AF_INET;
+    dst.sin_port = htons(8001);
+    inet_pton(AF_INET, "127.0.0.1", &dst.sin_addr);
+    c = connect(sockfd, (struct sockaddr *) &dst, sizeof(dst));
+    if (c == -1) {
         perror("oops: client1");
         exit(1);
     }
-    write(sockfd, str, strlen(str));
-    printf("--------\n");
-    size_t receive_len = read(sockfd, str, 1024);
-    str[receive_len] = '\0';
-    printf("char from server = %s\n", str);
+
+    while (1) {
+        scanf("%s", str);
+        write(sockfd, str, strlen(str) + 1);    // +1 means '\0'
+        printf("------ transmit to srv: %s\n", str);
+        size_t receive_len = read(sockfd, str, 1024);
+        if (!receive_len) {
+            break;
+        }
+        // str[receive_len] = '\0';
+        printf("------ receive from srv: %s\n", str);
+    }
+
+    printf("----- no data received, bye\n");
     close(sockfd);
     exit(0);
 }

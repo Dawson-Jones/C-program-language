@@ -7,7 +7,7 @@
 #include <netinet/in.h>
 
 #define BUF_LEN 1024
-#define PORT 8080
+#define PORT 8001
 
 
 int main() {
@@ -34,7 +34,7 @@ int main() {
     char buffer[BUF_LEN] = {0};
     while (1) {
         int client_socket = accept(serv_sock, (struct sockaddr *) &client_addr, &client_addr_size);
-        printf("addr: %s, fd: %d\n", inet_ntoa(client_addr.sin_addr), client_socket);
+        printf("addr: %s, port: %d, fd: %d\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port), client_socket);
         // 非常奇怪， 到这里阻塞，下面的直到消息发送过来不会执行
 
         int bytes_len;
