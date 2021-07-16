@@ -21,7 +21,8 @@ int main() {
     struct sockaddr_in serv_addr;
     memset(&serv_addr, 0, sizeof(serv_addr));  // 初始化 sock_addr
     serv_addr.sin_family = AF_INET;
-    serv_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+    inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr);
+    // serv_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
     serv_addr.sin_port = htons(PORT);
 
     // 让套接字和特定的 ip 端口绑定起来, 使此 ip 端口传过来的消息能够被该套接字接收到
