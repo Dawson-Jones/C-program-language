@@ -1,5 +1,5 @@
 # C-program-language
-#### 二维指针	
+## 二维指针	
 
 ```c
 int *arr[3];
@@ -38,7 +38,7 @@ int *arr[3] = {l1, l2, l3};
 
 
 
-#### 位运算技巧
+## 位运算技巧
 
 - 寻找最低位为 1 的 位置
 
@@ -47,3 +47,110 @@ int *arr[3] = {l1, l2, l3};
 - 按 N 位进行对齐 (N进制进1法)
 
     (len + N - 1) & ~(N - 1)
+
+
+
+## 宏container_of(ptr, type, member)
+
+> 通过结构体 *成员变量* 地址获取 *该结构体* 的地址
+
+```c
+#define container_of(ptr, type, member) ({				\
+	void *__mptr = (void *)(ptr);					\
+	BUILD_BUG_ON_MSG(!__same_type(*(ptr), ((type *)0)->member) &&	\
+			 !__same_type(*(ptr), void),			\
+			 "pointer type mismatch in container_of()");	\
+	((type *)(__mptr - offsetof(type, member))); })
+```
+
+### 参数
+
+- ptr
+
+    成员变量的地址
+
+- type
+
+    该结构体类型
+
+- member
+
+    该成员在结构体中的名字
+    
+    
+
+### 知识点
+
+#### ({}) 的作用
+
+> 返回最后一个表达式的值。比如`x = ({a;b;c;d;})`，最终x的值应该是d。
+
+```c
+#include<stdio.h>
+
+void main(void)
+{
+    int a=({1;2;4;})+10;
+    printf("%d\n",a);  //a=14
+}
+```
+
+
+
+#### typeof: 根据变量获取变量类型
+
+```c
+void main(void)
+{
+    int a = 6;
+    typeof(a) b =9;	// typeof(a) is int
+    printf("%d %d\n",a, b);
+}
+```
+
+
+
+#### (struct st *) 0 的作用
+
+**看例子**
+
+```c
+struct st{
+    int a;
+    int b;
+} *p_st, n_st;
+
+void main(void)
+{
+    printf("%p\n", &((struct st*)0)->b);	// 0x4
+}
+```
+
+
+
+把 0 地址强制转换为该类型, 然后获取成员相较于0的地址
+
+相当于尺子
+
+
+
+### offset 的实现
+
+```c
+#define offsetof(TYPE, MEMBER) ((size_t) &((TYPE*)0)->MEMBER)
+```
+
+>获取成员的在结构体中的偏移量
+
+```c
+struct st{
+    int a;
+    int b;
+} *p_st, n_st;
+
+void main(void)
+{
+    printf("%lu\n", offsetof(struct st, b));	// 4
+}
+```
+
