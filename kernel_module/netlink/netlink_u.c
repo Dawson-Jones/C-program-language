@@ -35,7 +35,7 @@ void send_msg(int nlfd, struct nlmsghdr *nlh, struct sockaddr_nl *daddr_p) {
 
 void recv_msg(int nlfd, struct sockaddr_nl *daddr_p) {
 	int len, ret;
-	struct user_msg_info u_info;
+	struct user_msg_info u_info = {};
 
 	// Read N bytes into BUF through socket FD.
    	// If ADDR is not NULL, fill in *ADDR_LEN bytes of it with tha address of
