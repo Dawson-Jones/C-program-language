@@ -1,0 +1,1 @@
+/usr/bin/cc -rdynamic CMakeFiles/UDP_PROG.dir/cli.c.o -o UDP_PROG  libmytbf/libmytbf.a 
