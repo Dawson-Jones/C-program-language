@@ -58,7 +58,6 @@ struct nlmsghdr *make_nlhdr(int nl_pid) {
 
 	nlh = (struct nlmsghdr *) malloc(NLMSG_SPACE(MAX_PAYLOAD));
 	memset(nlh, 0, sizeof(struct nlmsghdr));
-
 	nlh->nlmsg_len = NLMSG_SPACE(MAX_PAYLOAD);
 	nlh->nlmsg_pid = nl_pid;
 
@@ -99,6 +98,7 @@ int main() {
 
 	nlh = make_nlhdr(saddr.nl_pid);
 	send_msg(nlfd, nlh, &daddr);
+	exit(EXIT_FAILURE)
 
 	recv_msg(nlfd, &daddr);
 	close(nlfd);

@@ -10,7 +10,7 @@ int main(int argc, char** argv)
     char    *p_map;    
     
     /* 匿名映射,创建一块内存供父子进程通信 */    
-    p_map = (char *)mmap(NULL, BUF_SIZE, PROT_READ | PROT_WRITE,    
+    p_map = (char *) mmap(NULL, BUF_SIZE, PROT_READ | PROT_WRITE,    
             MAP_SHARED | MAP_ANONYMOUS, -1, 0);    
     
     if(fork() == 0) {    
