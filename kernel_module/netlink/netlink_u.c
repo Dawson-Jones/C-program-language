@@ -35,7 +35,7 @@ void send_msg(int nlfd, struct nlmsghdr *nlh, struct sockaddr_nl *daddr_p) {
 
 void recv_msg(int nlfd, struct sockaddr_nl *daddr_p) {
 	int len, ret;
-	struct user_msg_info u_info;
+	struct user_msg_info u_info = {};
 
 	// Read N bytes into BUF through socket FD.
    	// If ADDR is not NULL, fill in *ADDR_LEN bytes of it with tha address of
@@ -58,7 +58,6 @@ struct nlmsghdr *make_nlhdr(int nl_pid) {
 
 	nlh = (struct nlmsghdr *) malloc(NLMSG_SPACE(MAX_PAYLOAD));
 	memset(nlh, 0, sizeof(struct nlmsghdr));
-
 	nlh->nlmsg_len = NLMSG_SPACE(MAX_PAYLOAD);
 	nlh->nlmsg_pid = nl_pid;
 
@@ -99,6 +98,7 @@ int main() {
 
 	nlh = make_nlhdr(saddr.nl_pid);
 	send_msg(nlfd, nlh, &daddr);
+	exit(EXIT_FAILURE)
 
 	recv_msg(nlfd, &daddr);
 	close(nlfd);

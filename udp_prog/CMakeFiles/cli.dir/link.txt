@@ -1,0 +1,1 @@
+/usr/bin/cc -rdynamic CMakeFiles/cli.dir/cli.c.o -o cli  libmytbf/libmytbf.a 

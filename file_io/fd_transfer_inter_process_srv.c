@@ -13,7 +13,8 @@
 
 #define UNIXSTR_PATH "foo.socket"
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
 	int clifd, listenfd;
 	struct sockaddr_un servaddr, cliaddr;
 	int ret;

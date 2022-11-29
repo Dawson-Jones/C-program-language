@@ -10,46 +10,51 @@
 #define PORT 8001
 
 
-int main(int argc, ar) {
+int main() {
     int port;
-    printf("")
-    scanf()
     //                     ipv4                  
-    int serv_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    int sock_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    if (sock_fd == -1) {
+        perror("socket");
+        exit(EXIT_FAILURE);
+    }
 
-    struct sockaddr_in serv_addr;
-    memset(&serv_addr, 0, sizeof(serv_addr));  // 初始化 sock_addr
-    serv_addr.sin_family = AF_INET;
-    inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr);
-    // serv_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-    serv_addr.sin_port = htons(PORT);
+    struct sockaddr_in cli_addr, srv_addr;
+    memset(&srv_addr, 0, sizeof(srv_addr));  // 初始化 sock_addr
+    srv_addr.sin_family = AF_INET;
+    // inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr);
+    srv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    srv_addr.sin_port = htons(PORT);
 
     // 让套接字和特定的 ip 端口绑定起来, 使此 ip 端口传过来的消息能够被该套接字接收到
-    bind(serv_sock, (struct sockaddr *) &serv_addr, sizeof(serv_addr));
-    listen(serv_sock, 20);
+    if (bind(sock_fd, (struct sockaddr *) &srv_addr, sizeof(srv_addr)) != 0) {
+        perror("bind");
+        exit(EXIT_FAILURE);
+    }
+    listen(sock_fd, 20);
 
-    struct sockaddr_in client_addr;
-    socklen_t client_addr_size = sizeof(client_addr);
+    socklen_t cli_addr_size = sizeof(cli_addr);
 
-    char buffer[BUF_LEN] = {0};
     while (1) {
-        int client_socket = accept(serv_sock, (struct sockaddr *) &client_addr, &client_addr_size);
-        printf("addr: %s, port: %d, fd: %d\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port), client_socket);
-        // 非常奇怪， 到这里阻塞，下面的直到消息发送过来不会执行
+        int conn_fd = accept(sock_fd, (struct sockaddr *) &cli_addr, &cli_addr_size);
+        printf("addr: %s, port: %d, fd: %d\n", inet_ntoa(cli_addr.sin_addr), ntohs(cli_addr.sin_port), conn_fd);
+        // 到这里阻塞，下面的直到消息发送过来不会执行
 
         int bytes_len;
-        while ((bytes_len = read(client_socket, buffer, BUF_LEN))) {
+        char buffer[BUF_LEN] = {0};
+        while ((bytes_len = read(conn_fd, buffer, BUF_LEN))) {
         // while ((bytes_len = recv(client_socket, buffer, BUF_LEN, 0))) {
             printf("%s\n", buffer);
-            write(client_socket, buffer, strlen(buffer));
+            write(conn_fd, buffer, strlen(buffer));
             // send(client_socket, buffer, strlen(buffer), 0);
             if (!bytes_len){
                 break;
             }
         }
         printf("client close connect.\n");
-        close(client_socket);
+        close(conn_fd);
     }
-    close(serv_sock);
+
+    close(sock_fd);
     return 0;
 }
