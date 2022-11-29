@@ -1,6 +1,0 @@
-/home/bytedance/test/udp_prog/build/CMakeFiles/cli.dir
-/home/bytedance/test/udp_prog/build/CMakeFiles/edit_cache.dir
-/home/bytedance/test/udp_prog/build/CMakeFiles/rebuild_cache.dir
-/home/bytedance/test/udp_prog/build/libmytbf/CMakeFiles/mytbf.dir
-/home/bytedance/test/udp_prog/build/libmytbf/CMakeFiles/edit_cache.dir
-/home/bytedance/test/udp_prog/build/libmytbf/CMakeFiles/rebuild_cache.dir
