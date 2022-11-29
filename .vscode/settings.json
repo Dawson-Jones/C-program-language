@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "socket.h": "c",
+        "_sa_family_t.h": "c",
+        "locale": "c"
+    }
+}
