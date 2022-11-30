@@ -4,7 +4,7 @@ RAW = ${NAME:=.c}
 OBJ = ${RAW:.c=.o}
 SO = ${RAW:.c=.so}
 
-CFLAG +=  -fPIC -shared
+CFLAG += -fPIC -shared
 
 $(SO): $(RAW)
 	$(CC) $^ $(CFLAG) -o $@

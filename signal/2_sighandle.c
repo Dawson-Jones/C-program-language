@@ -14,7 +14,6 @@ void sig_handle(int sig) {
 
 int main(int argc, char const *argv[])
 {
-    // 忽略 SIGINT 信号
     signal(SIGINT, sig_handle);
 
     for (int i = 0; i < 10; i++) {
