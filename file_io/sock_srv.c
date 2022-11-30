@@ -11,10 +11,7 @@
 
 
 int main() {
-    /*
-     * sock_stream 是有保障的(即能保证数据正确传送到对方)面向连接的SOCKET，多用于资料(如文件)传送。
-     * sock_dgram 是无保障的面向消息的socket ， 主要用于在网络上发广播信息。
-     */
+    int port;
     //                     ipv4                  
     int sock_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (sock_fd == -1) {
