@@ -162,3 +162,21 @@ void main(void)
 }
 ```
 
+
+
+## pack
+
+```c
+#pragma pack(push, 1) // exact fit - no padding
+struct MyStruct
+{
+  char b; 
+  int a; 
+  int array[2];
+};
+#pragma pack(pop) //back to whatever the previous packing mode was
+```
+
+Without the pragma directive, the size of the structure is 16 bytes — with the packing of 1 — the size is 13 bytes.
+
+没有 pragma 指令, 结构体的大小是 16 Bytes, packing 是 1 的时候, 大小是 13
