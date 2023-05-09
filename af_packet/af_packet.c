@@ -10,6 +10,7 @@
 #include <sys/ioctl.h>
 #include <net/if.h>
 #include <linux/if.h>
+#include <linux/ipv6.h>
 #include <arpa/inet.h>
 
 #define BUFFER_SIZE 2048
