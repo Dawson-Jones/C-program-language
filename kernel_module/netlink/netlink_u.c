@@ -98,7 +98,7 @@ int main() {
 
 	nlh = make_nlhdr(saddr.nl_pid);
 	send_msg(nlfd, nlh, &daddr);
-	exit(EXIT_FAILURE)
+	exit(EXIT_FAILURE);
 
 	recv_msg(nlfd, &daddr);
 	close(nlfd);
