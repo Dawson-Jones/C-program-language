@@ -112,7 +112,7 @@ fail:
 
 int main(int argc, char const *argv[])
 {
-    struct nstoken *nstoken = open_netns("veth0");
+    struct nstoken *nstoken = open_netns("ns0");
     if (!nstoken) {
         return EXIT_FAILURE;
     }
@@ -122,7 +122,8 @@ int main(int argc, char const *argv[])
         return EXIT_FAILURE;
     }
 
-    // close_netns(nstoken);
+    close_netns(nstoken);
+    pause();
 
     return 0;
 }
