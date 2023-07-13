@@ -31,6 +31,9 @@ int main(int argc, char *argv[]) {
     int flags = 0;
     int opt;
 
+    pid_t pid =  getpid();
+    printf("pid: %jd\n", (intmax_t) pid);
+
     while ((opt = getopt(argc, argv, "CimnptuU")) != -1) {
         switch (opt) {
         case 'C': flags |= CLONE_NEWCGROUP;  break;

@@ -12,7 +12,7 @@
 #define RECV_TIMEOUT_USEC 100000
 
 const char *magic = "1234567890";
-#define MAGIC_LEN 11
+#define MAGIC_LEN 10
 
 
 struct icmp_echo {
