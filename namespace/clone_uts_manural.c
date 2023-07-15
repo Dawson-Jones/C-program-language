@@ -78,6 +78,8 @@ int main(int argc, char *argv[]) {
 
     if (waitpid(child_pid, NULL, 0) == -1)
         errExit("waitpid");
+    
+    munmap(stack, STACK_SIZE);
     printf("child has terninated\n");
 
     return 0;
