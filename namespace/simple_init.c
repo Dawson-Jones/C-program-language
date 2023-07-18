@@ -31,7 +31,7 @@ static void child_handler(int sig)
         }
 
         if(verbose) {
-            printf("\tinint: SIGCHLD handler: PID %ld terminated\n", (long) pid);
+            printf("\tinit: SIGCHLD handler: PID %ld terminated\n", (long) pid);
         }
     }
 }
@@ -69,7 +69,7 @@ static void usage(char *pname)
 }
 
 
-int main(int argc, char const *argv[])
+int main(int argc, char *argv[])
 {
     struct sigaction sa;
 #define CMD_SIZE 10000
@@ -93,7 +93,54 @@ int main(int argc, char const *argv[])
         printf("\tinit: my PID is %ld\n", (long) getpid());
     }
 
-    pause();
+    signal(SIGTTOU, SIG_IGN);
+
+    if (setpgid(0, 0) == -1)
+        errExit("setpgid");
+    if (tcsetpgrp(STDIN_FILENO, getpgrp()) == -1)
+        errExit("tcsetpgrp-child");
+    
+    while (1) {
+        printf("init$ ");
+        if (fgets(cmd, CMD_SIZE, stdin) == NULL) {
+            if (verbose)
+                printf("\tinit: exiting");
+            printf("\n");
+            exit(EXIT_SUCCESS);
+        }
+        if (cmd[strlen(cmd) - 1] == '\n')
+            cmd[strlen(cmd) - 1] = '\0';
+        if (strlen(cmd) == 0)
+            continue;
+
+        pid = fork();
+
+        if (pid == -1)
+            errExit("fork");
+        if (pid == 0) { // child
+            char **arg_vec;
+            arg_vec = expand_words(cmd);
+            if (arg_vec == NULL)
+                continue;
+            
+            if (setpgid(0, 0) == -1)
+                errExit("setpgid");
+            if (tcsetpgrp(STDIN_FILENO, getpgrp()) == -1)
+                errExit("tcsetpgrp-child");
+            
+            execvp(arg_vec[0], arg_vec);
+            errExit("execvp");
+        }
+
+        // parent flls through here
+        if (verbose)
+            printf("\tinit: created child %ld\n", (long) pid); 
+
+        pause();
+
+        if (tcsetpgrp(STDIN_FILENO, getpgrp()) == -1)
+            errExit("tcsetpgrp");
+    }
 
     return 0;
 }

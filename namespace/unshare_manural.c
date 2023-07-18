@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <sched.h>
 #include <fcntl.h>
+#include <stdint.h>
 
 #define errExit(msg)    do { perror(msg); exit(EXIT_FAILURE); } while (0)
 

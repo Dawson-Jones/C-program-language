@@ -30,9 +30,9 @@ static int child_func(void *arg) {
         printf("Mounting procfs at %s\n", mount_point);
     }
 
-    execlp("sleep", "sleep", "600", (char *) NULL);
-    // pause();
-    // umount(mount_point);
+    // execlp("sleep", "sleep", "600", (char *) NULL);
+    pause();
+    umount(mount_point);
     errExit("execlp");
 }
 
