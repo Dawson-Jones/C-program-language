@@ -20,7 +20,7 @@ int main(int argc, char const *argv[])
     char buf[_SIZE_];
     while (1) {
         memset(buf, 0, sizeof(buf));
-        int ret =read(fd, buf, sizeof(buf));
+        int ret = read(fd, buf, sizeof(buf));
         if (ret < 0) {
             perror("read");
             break;

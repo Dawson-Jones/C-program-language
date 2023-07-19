@@ -10,7 +10,7 @@
 #define errExit(msg)    do { perror(msg); exit(EXIT_FAILURE); } while (0)
 
 
-int main(int argc, char const *argv[]) {
+int main(int argc, char *argv[]) {
     int fd;
     if (argc < 3) {
         fprintf(stderr, "%s /proc/PID/ns/FILE cmd args...\n", argv[0]);
