@@ -149,6 +149,16 @@ int main(int argc, char *argv[]) {
         update_map(uid_map, map_path);
     }
     if (gid_map != NULL) {
+        // https://unix.stackexchange.com/questions/692177/echo-to-gid-map-fails-but-uid-map-success/692194#692194?newreg=6392de4a4bac40bda61383677511bbf9
+        // Writing "deny" to the /proc/[pid]/setgroups file 
+        // before writing to /proc/[pid]/gid_map 
+        // will permanently disable setgroups(2) 
+        // in a user namespace and allow writing to /proc/[pid]/gid_map 
+        // without having the CAP_SETGID capability in the parent user namespace.
+        snprintf(map_path, PATH_MAX, "/proc/%ld/setgroups", (long) child_pid);
+        int fd = open(map_path, O_RDWR);    // error check
+        write(fd, "deny", strlen("deny"));  // ignore
+        close(fd);
         snprintf(map_path, PATH_MAX, "/proc/%ld/gid_map", (long) child_pid);
         update_map(gid_map, map_path);
     }

@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
 			recvfd = *((int *)CMSG_DATA(pcmsg));
 			printf("recv fd = %d\n", recvfd);
 
-			write(recvfd, testmsg, strlen(testmsg) + 1);
+			write(recvfd, testmsg, strlen(testmsg));
 		}
 	}
 
