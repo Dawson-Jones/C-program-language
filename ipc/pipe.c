@@ -15,14 +15,14 @@ int main(int argc, char const *argv[])
     if (pid < 0) {
         perror("fork\n");
     } else if (pid == 0) {
-        // close(_pipe[0]);
+        close(_pipe[0]);
         for (int i = 0; i < 100; ++i) {
             char *msg = "I am child";
             write(_pipe[1], msg, strlen(msg));
             sleep(1);
         }
     } else {
-        // close(_pipe[1]);
+        close(_pipe[1]);
         char msg[100];
         for (int i = 0; i < 100; ++i) {
             memset(msg, 0, sizeof(msg));

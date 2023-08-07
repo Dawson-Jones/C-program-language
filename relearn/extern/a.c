@@ -6,7 +6,8 @@ int main(int argc, char const *argv[])
     void func();
 
     printf("file a -> num: %d\n", num);
-    num = 1;
+    // num = 1;
     func();
+    printf("file a -> num: %d\n", num);
     return 0;
 }
