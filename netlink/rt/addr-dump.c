@@ -28,8 +28,6 @@ struct rtnl_handle {
 };
 
 
-
-
 typedef struct
 {
 	__u16 flags;
@@ -323,8 +321,6 @@ static int rtnl_talk(struct rtnl_handle *rtnl, struct nlmsghdr *n, struct nlmsgh
 	}
 	// }
 }
-
-
 
 struct iplink_req {
 	struct nlmsghdr		n;
