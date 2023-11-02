@@ -115,6 +115,10 @@ int app_setup_uring(struct submitter *s) {
      * example, we don't.
      * */
     memset(&p, 0, sizeof(p));
+    // init work required
+    // 唯一需要指定的是 flag, 这里也不需要指定
+    // 这里没有并发, 所以 depth 也是 1
+    // 返回值是一个 fd 和 io_uring_param 结构体的其他成员
     s->ring_fd = io_uring_setup(QUEUE_DEPTH, &p);
     if (s->ring_fd < 0) {
         perror("io_uring_setup");
@@ -319,6 +323,8 @@ int submit_to_sq(char *file_path, struct submitter *s) {
     sqe->len = blocks;
     sqe->off = 0;
     sqe->user_data = (unsigned long long) fi;
+
+    // fill the sqe index into the SQ ring array
     sring->array[index] = index;
     tail = next_tail;
 
