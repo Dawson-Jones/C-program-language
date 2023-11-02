@@ -100,7 +100,7 @@ int main(int argc, char const *argv[]) {
     struct io_uring ring;
     io_uring_queue_init(QUEUE_DEPTH, &ring, 0);
 
-    for (int i = 0; i < argc; ++i) {
+    for (int i = 1; i < argc; ++i) {
         int ret = submit_read_request(argv[i], &ring);
         if (ret) {
             fprintf(stderr, "Error reading file: %s\n", argv[i]);
