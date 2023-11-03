@@ -169,7 +169,7 @@ void send_headers(const char *path, long content_length, struct iovec *iov) {
     strcpy(small_case_path, path);
     strtolower(small_case_path);
 
-    char *str = "HTTP/1.0 200 OK\r\n";
+    char *str = "HTTP/1.1 200 OK\r\n";
     unsigned long slen = strlen(str);
     iov[0].iov_base = zh_malloc(slen);
     iov[0].iov_len = slen;
@@ -305,8 +305,8 @@ void handle_get_method(char *path, int client_socket) {
         ctx = zh_malloc(sizeof(*ctx) + sizeof(struct iovec) * iovec_count);
         ctx->iovec_count = iovec_count;
         ctx->client_socket = client_socket;
+        printf("%s %ld bytes\n", final_path, path_stat.st_size);
         copy_file_contents(final_path, path_stat.st_size, ctx);
-        printf("200 %s %ld bytes\n", final_path, path_stat.st_size);
         // move to EVENT_TYPE_READ_FILE;
         // add_write_request(ctx);
     #else
