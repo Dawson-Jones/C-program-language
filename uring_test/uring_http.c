@@ -24,7 +24,7 @@ enum event {
 };
 
 struct context {
-    int event_type;
+    enum event event_type;
     int iovec_count;
     int client_socket;
     int path_fd;
@@ -165,7 +165,6 @@ const char *get_filename_ext(const char *filename) {
 
 void send_headers(const char *path, long content_length, struct iovec *iov) {
     char small_case_path[1024];
-    // TODO: send_buffer 没什么用
     char buf[1024];
     strcpy(small_case_path, path);
     strtolower(small_case_path);
@@ -223,21 +222,32 @@ void send_headers(const char *path, long content_length, struct iovec *iov) {
 }
 
 
-void copy_file_contents(const char *path, long file_size, struct iovec *iov) {
+void copy_file_contents(const char *path, long file_size, struct context *ctx) {
     int fd = open(path, O_RDONLY);
     if (fd < 0)
         fatal_error("open");
-    char *buf = zh_malloc(file_size);
-
-    // TODO: 继续使用 readv 和 uring 读取
-    int ret = read(fd, buf, file_size);
-    if (ret < file_size) {
-        fprintf(stderr, "Encountered a short read.\n");
+    printf("open: %s, fd: %d\n", path, fd);
+    
+    off_t remaining = file_size;
+    off_t offset = 0;
+    int current_block = 0;
+    struct iovec *iovs = ctx->iov;
+    while (remaining > 0) {
+        off_t bytes_to_read = remaining > READ_SZ ? READ_SZ : remaining;
+        offset += bytes_to_read;
+        iovs[current_block].iov_base = zh_malloc(bytes_to_read);
+        iovs[current_block].iov_len = bytes_to_read;
+        current_block++;
+        remaining -= bytes_to_read;
     }
-    close(fd);
+    
+    ctx->path_fd = fd;
+    ctx->event_type = EVENT_TYPE_READ_FILE;
 
-    iov->iov_base = buf;
-    iov->iov_len = file_size;
+    struct io_uring_sqe *sqe = io_uring_get_sqe(&ring);
+    io_uring_prep_readv(sqe, fd, iovs, ctx->iovec_count, 0);
+    io_uring_sqe_set_data(sqe, ctx);
+    io_uring_submit(&ring);
 }
 
 void _send_static_string_content(const char *str, int client_socket) {
@@ -261,6 +271,7 @@ void handle_http_404(int client_socket) {
 
 void handle_get_method(char *path, int client_socket) {
     char final_path[1024];
+    struct context *ctx;
 
     if (path[strlen(path) - 1] == '/') {
         strcpy(final_path, "public");
@@ -279,26 +290,29 @@ void handle_get_method(char *path, int client_socket) {
     }
 
     if (S_ISREG(path_stat.st_mode)) {
-    #ifndef SENDFILE
-        int iovec_count = 5 + path_stat.st_size / READ_SZ;
-        if (path_stat.st_size % READ_SZ != 0)
-            iovec_count++;
-    #else
         int iovec_count = 5;
-    #endif
-        struct context *ctx = zh_malloc(sizeof(*ctx) + sizeof(struct iovec) * iovec_count);
+
+        ctx = zh_malloc(sizeof(*ctx) + sizeof(struct iovec) * iovec_count);
         ctx->iovec_count = iovec_count;
         ctx->client_socket = client_socket;
 
         send_headers(final_path, path_stat.st_size, ctx->iov);
+        add_write_request(ctx);
     #ifndef SENDFILE
-        copy_file_contents(final_path, path_stat.st_size, &ctx->iov[5]);
+        iovec_count = path_stat.st_size / READ_SZ;
+        if (path_stat.st_size % READ_SZ != 0)
+            iovec_count++;
+        ctx = zh_malloc(sizeof(*ctx) + sizeof(struct iovec) * iovec_count);
+        ctx->iovec_count = iovec_count;
+        ctx->client_socket = client_socket;
+        copy_file_contents(final_path, path_stat.st_size, ctx);
+        printf("200 %s %ld bytes\n", final_path, path_stat.st_size);
+        // move to EVENT_TYPE_READ_FILE;
+        // add_write_request(ctx);
     #else
         ctx->path_fd = open(final_path, O_RDONLY);
         ctx->file_size = path_stat.st_size;
     #endif
-        printf("200 %s %ld bytes\n", final_path, path_stat.st_size);
-        add_write_request(ctx);
     } else {
         handle_http_404(client_socket);
         printf("404 Not Found: %s\n", final_path);
@@ -370,20 +384,34 @@ void server_loop(int listening_socket) {
                 inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
 
             add_accept_request(listening_socket, &client_addr, &client_addr_len);
-            printf("cli fd: %d\n", cqe->res);
+            printf("client fd: %d\n", cqe->res);
             add_read_request(cqe->res);
             free(ctx);
             break;
         case EVENT_TYPE_READ_SOCK:
-            if (!cqe->res) {
-                fprintf(stderr, "Empty request: %d %s!\n", cqe->res, strerror(cqe->res));
-                break;
+            if (cqe->res == 0) {
+                fprintf(stderr, "Empty request! ");
+                fprintf(stderr, "Maybe EOF, should be close client fd: %d\n", ctx->client_socket);
+                close(ctx->client_socket);
+            } else {
+                handle_client_request(ctx);
             }
-            handle_client_request(ctx);
+
             free(ctx->iov[0].iov_base);
             free(ctx);
             break;
         case EVENT_TYPE_READ_FILE:
+            if (cqe->res == 0) {
+                fprintf(stderr, "Empty read");
+                printf("close fd: %d\n", ctx->path_fd);
+                close(ctx->path_fd);
+                // close(ctx->client_socket);
+                break;
+            }
+
+            add_write_request(ctx);
+            printf("read file over, close fd: %d\n", ctx->path_fd);
+            close(ctx->path_fd);
             break;
         case EVENT_TYPE_WRITE:
         #ifdef SENDFILE
@@ -395,8 +423,14 @@ void server_loop(int listening_socket) {
             for (int i = 0; i < ctx->iovec_count; i++) {
                 free(ctx->iov[i].iov_base);
             }
-            // TODO: 写完就关闭? 短链接? 不是很好
-            close(ctx->client_socket);
+            // 写完就关闭? 短链接? 不是很好
+            // close(ctx->client_socket);
+            if (ctx->path_fd) {
+                // 有path fd 说明是body, 
+                // body 写完后, 将 client socket 放入 read 队列中
+                add_read_request(ctx->client_socket);
+            }
+
             free(ctx);
             break;
         }
