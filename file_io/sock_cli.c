@@ -6,7 +6,7 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <string.h>
-
+#include <linux/if.h>
 
 void parse_addr(char *addr, char **ip_str_p, char **port_str_p) {
     *ip_str_p = addr;
@@ -44,6 +44,16 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
+    /* bind to a specific interface */
+    // struct ifreq ifr;
+    // char ifname[] = "enp0s5";
+    // memset(&ifr, 0, sizeof(ifr));
+    // strncpy(ifr.ifr_name, ifname, sizeof(ifname) / sizeof(char));
+    // if (setsockopt(sockfd, SOL_SOCKET, SO_BINDTODEVICE, (char *) &ifr, sizeof(ifr)) != 0) {
+    //     perror("setsockopt");
+    //     exit(EXIT_FAILURE);
+    // }
+
     /** ---- not nessary ------------
     src.sin_family = AF_INET;
     src.sin_port = htons(1314);
@@ -53,6 +63,8 @@ int main(int argc, char *argv[]) {
     if (b == -1)
         perror("oops bind");
     // --------------------------------- */
+
+    struct msghdr msg
 
     dst.sin_family = AF_INET;
     dst.sin_port = htons(port);
@@ -71,12 +83,12 @@ int main(int argc, char *argv[]) {
         scanf("%s", str);
         write(sockfd, str, strlen(str) + 1);    // +1 means '\0'
         printf("------ transmit to srv: %s\n", str);
-        size_t receive_len = read(sockfd, str, 1024);
-        if (!receive_len) {
-            break;
-        }
-        // str[receive_len] = '\0';
-        printf("------ receive from srv: %s\n", str);
+        // size_t receive_len = read(sockfd, str, 1024);
+        // if (!receive_len) {
+        //     break;
+        // }
+        // // str[receive_len] = '\0';
+        // printf("------ receive from srv: %s\n", str);
     }
 
     printf("----- no data received, bye\n");
