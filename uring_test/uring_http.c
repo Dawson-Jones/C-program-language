@@ -426,7 +426,8 @@ void server_loop(int listening_socket) {
             // 写完就关闭? 短链接? 不是很好
             // close(ctx->client_socket);
             if (ctx->path_fd) {
-                // 有path fd 说明是body, 
+                // 虽然关闭了, 但是 path_fd 值还存在
+                // 有path_fd 说明是body, 
                 // body 写完后, 将 client socket 放入 read 队列中
                 add_read_request(ctx->client_socket);
             }
