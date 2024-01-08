@@ -11,7 +11,7 @@
 
 int main(int argc, char const *argv[]) {
     int i, fd;
-    size_t count;
+    size_t count = 0;
     struct stat statres;
     const char *file;
     char *str;
