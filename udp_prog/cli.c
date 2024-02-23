@@ -84,13 +84,17 @@ int main(int argc, char **argv)
 
     mytbf_t *tbf = mytbf_init(pps, pps * 5);
     // char client_message[length];
+    char msg[length];
+    for (int i = 0; i < length; ++i) {
+        msg[i] = i;
+    }
     while (count < total && mytbf_fetchtoken(tbf, 1)) {
         // memset(client_message, 0, sizeof(client_message));
-        char client_message[6] = {};
-        sprintf(client_message, "%d", ++count);
+        // char client_message[6] = {};
+        // sprintf(client_message, "%d", ++count);
 
-        printf("send %s\n", client_message);
-        if (sendto(socket_desc, client_message, strlen(client_message), 0, 
+        // printf("send %s\n", msg);
+        if (sendto(socket_desc, msg, strlen(msg), 0, 
                 (struct sockaddr *) &server_addr, server_struct_length) < 0) {
             fprintf(stderr, "unable to send message\n");
             return -1;

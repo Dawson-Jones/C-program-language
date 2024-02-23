@@ -7,7 +7,7 @@
 #include <getopt.h>
 #include <signal.h>
 
-#define BUCKET_COUNT 10000
+// #define BUCKET_COUNT 10000
 
 static void usage(void)
 {
@@ -16,26 +16,26 @@ static void usage(void)
     printf("        -h Display this help\n");
 }
 
-static char bucket[BUCKET_COUNT] = {};
+// static char bucket[BUCKET_COUNT] = {};
 
-static void handle(int sig)
-{
-    int counter = 0;
-    for (int i = 0; i < BUCKET_COUNT; ++i) {
-        if (bucket[i] != 1) {
-            if (bucket[i] == 0) {
-                counter++;
-                printf("loss the %dth packet, %d\n", i + 1, bucket[i]);
-            } else {
-                printf("reduplicate packet: %dth, %d\n", i + 1, bucket[i]);
-            }
-        }
-    }
+// static void handle(int sig)
+// {
+//     int counter = 0;
+//     for (int i = 0; i < BUCKET_COUNT; ++i) {
+//         if (bucket[i] != 1) {
+//             if (bucket[i] == 0) {
+//                 counter++;
+//                 printf("loss the %dth packet, %d\n", i + 1, bucket[i]);
+//             } else {
+//                 printf("reduplicate packet: %dth, %d\n", i + 1, bucket[i]);
+//             }
+//         }
+//     }
 
-    printf("loss %d packets\n", counter);
+//     printf("loss %d packets\n", counter);
 
-    exit(0);
-}
+//     exit(0);
+// }
 
 int main(int argc, char **argv)
 {
@@ -77,36 +77,38 @@ int main(int argc, char **argv)
 
     printf("Listening for incoming message...\n\n");
 
-    signal(SIGINT, handle);
-	signal(SIGTERM, handle);
-	signal(SIGABRT, handle);
+    // signal(SIGINT, handle);
+	// signal(SIGTERM, handle);
+	// signal(SIGABRT, handle);
 
     int err;
     int number = 0;
 
     while (1) {
-        char client_message[6] = {};
+        char client_message[1000] = {};
         err = recvfrom(socket_desc, client_message, sizeof(client_message), 0, (struct sockaddr *) &client_addr, &client_struct_length);
         if (err == -1) {
             perror("recvfrom\n");
             exit(EXIT_FAILURE);
         }
         
+        number++;
+        printf("recv %d\n", number);
         // if (client_message[0] == 4) {
         //     printf("EOT received\n");
         //     break;
         // }
 
-        number = atoi(client_message);
-        if (!number) {
-            fprintf(stderr, "can not convert to a number\n");
-            continue;
-        }
-        printf("recv %d\n", number);
+        // number = atoi(client_message);
+        // if (!number) {
+        //     fprintf(stderr, "can not convert to a number\n");
+        //     continue;
+        // }
+        // printf("recv %d\n", number);
 
-        bucket[number - 1]++;
-        if (number >= BUCKET_COUNT)
-            break;
+        // bucket[number - 1]++;
+        // if (number >= BUCKET_COUNT)
+        //     break;
     }
 
     close(socket_desc);
