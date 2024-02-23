@@ -55,7 +55,7 @@ int tun_alloc()
     printf("fd: %d\n", fd);
     memset(&ifr, 0, sizeof(ifr));
 
-    ifr.ifr_flags = flags;
+    ifr.ifr_flags = flags | IFF_NO_PI;
 
     if (*if_name)
         strncpy(ifr.ifr_ifrn.ifrn_name, if_name, IFNAMSIZ);
@@ -125,7 +125,7 @@ static void parse_command(int argc, char **argv)
     argc -= optind;
     if (argc > 0) {
         fprintf(stderr, "Too many options\n");
-        usage;
+        usage();
     }
     
     if (*if_name == 0)
@@ -297,6 +297,8 @@ int socket_alloc() {
             return net_fd;
         }
 
+        // after verified, close sock_fd is ok.
+        // close(sock_fd);
         do_debug("SERVER: Client connected from %s\n", inet_ntoa(remote.sin_addr));
     }
 
