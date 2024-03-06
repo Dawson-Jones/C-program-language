@@ -6,7 +6,11 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <string.h>
+#include <netinet/in.h>
+#include <net/if.h>
+#ifdef __linux__
 #include <linux/if.h>
+#endif
 
 void parse_addr(char *addr, char **ip_str_p, char **port_str_p) {
     *ip_str_p = addr;
@@ -20,7 +24,7 @@ void parse_addr(char *addr, char **ip_str_p, char **port_str_p) {
 }
 
 int main(int argc, char *argv[]) {
-    int sockfd, b, c;
+    int sockfd;
     struct sockaddr_in src, dst;
     char str[1024];
 
@@ -38,21 +42,28 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd == -1) {
+    if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
         perror("socket");
         exit(EXIT_FAILURE);
     }
 
     /* bind to a specific interface */
-    // struct ifreq ifr;
-    // char ifname[] = "enp0s5";
-    // memset(&ifr, 0, sizeof(ifr));
-    // strncpy(ifr.ifr_name, ifname, sizeof(ifname) / sizeof(char));
-    // if (setsockopt(sockfd, SOL_SOCKET, SO_BINDTODEVICE, (char *) &ifr, sizeof(ifr)) != 0) {
-    //     perror("setsockopt");
-    //     exit(EXIT_FAILURE);
-    // }
+#ifdef __linux__
+    struct ifreq ifr;
+    char ifname[] = "enp0s5";
+    memset(&ifr, 0, sizeof(ifr));
+    strncpy(ifr.ifr_name, ifname, sizeof(ifname) / sizeof(char));
+    if (setsockopt(sockfd, SOL_SOCKET, SO_BINDTODEVICE, (char *) &ifr, sizeof(ifr)) != 0) {
+        perror("setsockopt");
+        exit(EXIT_FAILURE);
+    }
+#elif defined(__APPLE__) && defined(__MACH__)   
+    unsigned int ifindex = if_nametoindex("en0");   // 好像并不管用
+    if (setsockopt(sockfd, IPPROTO_IP, IP_BOUND_IF, (char *) &ifindex, sizeof(ifindex)) != 0) {
+        perror("setsockopt");
+        exit(EXIT_FAILURE);
+    }
+#endif
 
     /** ---- not nessary ------------
     src.sin_family = AF_INET;
@@ -64,17 +75,11 @@ int main(int argc, char *argv[]) {
         perror("oops bind");
     // --------------------------------- */
 
-    struct msghdr msg
-
     dst.sin_family = AF_INET;
     dst.sin_port = htons(port);
-    if (inet_pton(AF_INET, ip_str, &dst.sin_addr) != 1) {
-        perror("input ip wrong");
-        return 1;
-    }
+    dst.sin_addr.s_addr = inet_addr(ip_str);
 
-    c = connect(sockfd, (struct sockaddr *) &dst, sizeof(dst));
-    if (c == -1) {
+    if (connect(sockfd, (struct sockaddr *) &dst, sizeof(dst)) == -1) {
         perror("oops: client1");
         exit(1);
     }

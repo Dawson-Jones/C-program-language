@@ -191,6 +191,8 @@ static int read_n(int fd, char *buf, int n)
     return n;
 }
 
+struct sockaddr_in *peer = NULL;
+
 static void serve(int tap_fd, int net_fd)
 {
     uint16_t nread, nwrite, package_len;
@@ -215,27 +217,33 @@ static void serve(int tap_fd, int net_fd)
         }
 
         if (FD_ISSET(tap_fd, &rd_set)) {
+            nread = read(tap_fd, buffer, BUFSIZE);
+            // dump(buffer, nread);
+            do_debug("read %d bytes from tap interface\n", nread);
 
-            } else {
-                nread = read(tap_fd, buffer, BUFSIZE);
-                // dump(buffer, nread);
-                do_debug("read %d bytes from tap interface\n", nread);
-
-                package_len = htons(nread);
-                cwrite(net_fd, (char *) &package_len, sizeof(package_len));
-                nwrite = cwrite(net_fd, buffer, nread);
-
-                do_debug("written %d bytes from to network\n", nwrite);
+            if (cli_addr == NULL) {
+                do_debug("client address is not set, skipping\n");
+                continue;
             }
+
+            nwrite = sendto(net_fd, buffer, nread, 0, (struct sockaddr *) &cli_addr, cli_struct_len);
+            if (nwrite < 0) {
+                perror("sendto()");
+                exit(EXIT_FAILURE);
+            }
+
+            do_debug("written %d bytes from to network\n", nwrite);
         } 
 
         if (FD_ISSET(net_fd, &rd_set)) {
-            nread = read_n(net_fd, (char *) &package_len, sizeof(package_len));
-            if (nread == 0) {   // ctrl-c at the other end
-                break;
+            struct sockaddr_in addr;
+            int addr_len = sizeof(addr);
+            nread = recvfrom(net_fd, buffer, BUFSIZE, 0, (struct sockaddr *) &addr, &addr_len);
+            if (cli_addr == NULL) {
+                struct sockaddr_in *cli_addr = calloc(addr_len, 1);
+                memcpy(cli_addr, &addr, addr_len);
+                cli_struct_len = addr_len;
             }
-
-            nread = read_n(net_fd, buffer, ntohs(package_len));
             // dump(buffer, nread);
             do_debug("read %d bytes from network\n", nread);
 
@@ -251,26 +259,21 @@ static void serve(int tap_fd, int net_fd)
 int socket_alloc() {
     int sock_fd, net_fd; 
     int err, optval = 1;
-    struct sockaddr_in local, remote;
+    struct sockaddr_in local;
 
-    sock_fd = socket(AF_INET, SOCK_STREAM, 0);
+    sock_fd = socket(AF_INET, SOCK_DGRAM, 0);
     if (sock_fd < 0) {
         return sock_fd;
     }
 
     if (cliserv == CLIENT) {
-        memset(&remote, 0, sizeof(remote));
-        remote.sin_family = AF_INET;
-        remote.sin_addr.s_addr = inet_addr(remote_ip);
-        remote.sin_port = htons(port);
-
-        err = connect(sock_fd, (struct sockaddr *) &remote, sizeof(remote));
-        if (err < 0) {
-            return err;
-        }
+        memset(&peer, 0, sizeof(remote));
+        peer.sin_family = AF_INET;
+        peer.sin_addr.s_addr = inet_addr(remote_ip);
+        peer.sin_port = htons(port);
 
         net_fd = sock_fd;
-        do_debug("CLIENT: Connected to server %s\n", inet_ntoa(remote.sin_addr));
+        do_debug("CLIENT: Connected to server %s\n", inet_ntoa(peer.sin_addr));
     } else {
         err = setsockopt(sock_fd, SOL_SOCKET, SO_REUSEADDR, (char *) &optval, sizeof(optval));
         if (err < 0) {
@@ -287,22 +290,7 @@ int socket_alloc() {
             return err;
         }
 
-        err = listen(sock_fd, 5);
-        if (err < 0) {
-            return err;
-        }
-
-        int remotelen = sizeof(remote);
-        memset(&remote, 0, remotelen);
-
-        net_fd = accept(sock_fd, (struct sockaddr *) &remote, &remotelen);
-        if (net_fd < 0) {
-            return net_fd;
-        }
-
-        // after verified, close sock_fd is ok.
-        // close(sock_fd);
-        do_debug("SERVER: Client connected from %s\n", inet_ntoa(remote.sin_addr));
+        net_fd = sock_fd; 
     }
 
     return net_fd;
